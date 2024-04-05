@@ -1,9 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Инициализация основного слайдера, если он управляет автоплеем storySwipers
-  var mainSwiper = new Swiper('.modal-stories-collection', {
-    // ...Параметры основного слайдера...
-  });
-
+  
   var allStorySwipers = [];
 
   // Функция обновления заполнения для активного булета
