@@ -1,64 +1,114 @@
 document.addEventListener('DOMContentLoaded', function() {
-  var allStorySwipers = [];
-  var activeSwiperIndex = 0; // Индекс активного слайдера
-  var fillAnimationDuration = 3000; // Длительность заполнения, в мс
+  var allStorySwipers = []; // Массив для хранения экземпляров слайдеров третьего уровня
 
-  // Функция запуска анимации заполнения для активного булета
-  function startFillAnimation(swiper) {
-    const activeBullet = swiper.pagination.bullets[swiper.activeIndex];
-    const fillElement = activeBullet.querySelector('.fill');
-
-    // Очистка предыдущей анимации, если таковая была
-    fillElement.style.transition = 'none';
-    fillElement.style.width = '0%';
-    // Принудительный reflow для сброса стилей
-    fillElement.offsetWidth;
-
-    // Установка анимации
-    fillElement.style.transition = `width ${fillAnimationDuration}ms linear`;
-    fillElement.style.width = '100%';
-  }
-
-  // Инициализация storySwipers
+  // Инициализация Swiper для каждого .story-slider (слайдер третьего уровня)
   document.querySelectorAll('.story-slider').forEach(function(el, index) {
+    var loopMode = el.getAttribute('loop-mode') === 'true';
+    var sliderDuration = el.getAttribute('slider-duration') ? parseInt(el.getAttribute('slider-duration'), 10) : 300;
+
     var storySwiper = new Swiper(el, {
-      // Ваши параметры инициализации
+      speed: sliderDuration,
+      loop: loopMode,
+      autoHeight: false,
+      centeredSlides: loopMode,
+      followFinger: true,
+      freeMode: false,
+      slideToClickedSlide: false,
+      slidesPerView: 1,
+      spaceBetween: 0,
+      rewind: false,
+      mousewheel: {
+        forceToAxis: true
+      },
+      keyboard: {
+        enabled: true,
+        onlyInViewport: true
+      },
+      pagination: {
+        el: el.querySelector('.story-slider-progresbar'),
+        bulletActiveClass: 'is-active',
+        bulletClass: 'story-slider-dot',
+        bulletElement: 'button',
+        clickable: true
+      },
+      navigation: {
+        nextEl: el.querySelector('.story-next'),
+        prevEl: el.querySelector('.story-prev'),
+        disabledClass: 'is-disabled'
+      },
+      slideActiveClass: 'is-active',
+      slideDuplicateActiveClass: 'is-active',
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false
+      },
       on: {
-        slideChange: function() {
-          // Запуск анимации заполнения при смене слайда
-          startFillAnimation(this);
-        },
         reachEnd: function() {
-          // Переключение к следующему слайду в модальном окне
-          var modalSwiper = document.querySelector('.modal-stories-collection').swiper;
-          modalSwiper.slideNext();
+          if (!this.loop) {
+            setTimeout(function() {
+              var mainSwiper = document.querySelector('.modal-stories-collection').swiper;
+              var nextIndex = mainSwiper.activeIndex + 1 >= mainSwiper.slides.length ? 0 : mainSwiper.activeIndex + 1;
+              mainSwiper.slideTo(nextIndex);
+            }, this.params.autoplay.delay);
+          }
         }
       }
     });
 
-    storySwiper.autoplay.stop(); // Остановка автоплея при инициализации
     allStorySwipers.push(storySwiper);
   });
 
-  // Установка автоплея только для активного storySwiper
-  function setActiveSwiperAutoplay(activeIndex) {
-    activeSwiperIndex = activeIndex;
-    allStorySwipers.forEach(function(swiper, index) {
-      if (index === activeIndex) {
-        startFillAnimation(swiper);
-        swiper.autoplay.start();
-      } else {
-        swiper.autoplay.stop();
+  // Инициализация второго уровня слайдера (пример)
+  var modalSwiper = new Swiper('.modal-stories-collection', {
+    speed: 300,
+    loop: false,
+    autoHeight: false,
+    centeredSlides: true,
+    followFinger: true,
+    freeMode: false,
+    slideToClickedSlide: false,
+    slidesPerView: 'auto',
+    spaceBetween: calculateSpaceBetween(),
+    mousewheel: {
+      forceToAxis: true
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: true
+    },
+    navigation: {
+      nextEl: '.swiper-next',
+      prevEl: '.swiper-prev',
+      disabledClass: 'is-disabled'
+    },
+    on: {
+      init: function() {
+        this.slides.forEach(function(slide, index) {
+          if (index !== this.activeIndex) {
+            allStorySwipers[index].autoplay.stop();
+          }
+        }, this);
+      },
+      slideChange: function() {
+        allStorySwipers.forEach(function(swiper, index) {
+          if (index === this.activeIndex) {
+            swiper.autoplay.start();
+          } else {
+            swiper.autoplay.stop();
+          }
+        }, this);
       }
-    });
+    }
+  });
+
+  // Функция для расчета пространства между слайдами
+  function calculateSpaceBetween() {
+    return window.innerWidth * 0.3;
   }
 
-  // Инициализация модального слайдера
-  var mainSwiper = document.querySelector('.modal-stories-collection').swiper;
-  mainSwiper.on('slideChange', function() {
-    setActiveSwiperAutoplay(this.activeIndex);
+  // Обновление слайдера при изменении размера окна
+  window.addEventListener('resize', function() {
+    modalSwiper.update();
   });
-  
-  // Установка начального автоплея
-  setActiveSwiperAutoplay(activeSwiperIndex);
 });
+
