@@ -1,6 +1,6 @@
 document.querySelectorAll('.modal-stories-item').forEach((storyItem) => {
   const storyId = storyItem.getAttribute('data-story-id');
-  const relatedImages = document.querySelectorAll(`.ss2-item[data-story-id="${storyId}"] img`);
+  const relatedImages = document.querySelectorAll(`.ss2-item[data-story-slug="${storyId}"] img`);
 
   if (relatedImages.length > 0) {
     const storySliderList = storyItem.querySelector('.story-slider-list');
