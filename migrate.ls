@@ -1,5 +1,5 @@
 document.querySelectorAll('.modal-stories-item').forEach((storyItem) => {
-  const storyId = storyItem.getAttribute('data-story-id');
+  const storyId = storyItem.getAttribute('data-story-slug');
   const relatedImages = document.querySelectorAll(`.ss2-item[data-story-slug="${storyId}"] img`);
 
   if (relatedImages.length > 0) {
