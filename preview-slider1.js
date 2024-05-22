@@ -16,7 +16,7 @@ $(document).ready(function() {
       watchOverflow: true,
       simulateTouch: true,
       allowTouchMove: true,
-      spaceBetween: 4, // Default spaceBetween value
+      spaceBetween: 8, // Default spaceBetween value
       rewind: false,
       mousewheel: {
         forceToAxis: true
