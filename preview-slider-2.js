@@ -12,11 +12,11 @@ $(document).ready(function() {
       freeMode: false,
       slideToClickedSlide: false,
       slidesPerView: 'auto',
-      slidesPerGroup: 5, // Добавленный параметр для пролистывания по 5 слайдов
+      slidesPerGroup: 2,
       watchOverflow: true,
       simulateTouch: true,
       allowTouchMove: true,
-      spaceBetween: 10,
+      spaceBetween: 8, // Default spaceBetween value
       rewind: false,
       mousewheel: {
         forceToAxis: true
@@ -38,6 +38,20 @@ $(document).ready(function() {
       },
       slideActiveClass: "is-active",
       slideDuplicateActiveClass: "is-active",
+      breakpoints: {
+        768: {
+        	slidesPerGroup: 5,
+          spaceBetween: 12
+        },
+        992: {
+        	slidesPerGroup: 5,
+          spaceBetween: 12
+        },
+				1280: {	
+        	slidesPerGroup: 7,
+          spaceBetween: 12
+        }
+      },
       on: {
         init: function() {
           console.log('Swiper initialized');
@@ -57,7 +71,6 @@ $(document).ready(function() {
       }
     });
 
-    // Добавляем обработчик события resize для обновления swiper
     $(window).on('resize', function() {
       swiper.update();
     });
